@@ -7,13 +7,24 @@ dotenv.config();
  
 const app = express();
  
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://fin-flow-personal-finance.vercel.app" // Your main production URL
+];
+
 app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "https://fin-flow-personal-finance-30nug6y5a-harshlogics-projects.vercel.app", // Your specific preview URL
-    "https://fin-flow-personal-finance.vercel.app" // Add your main production URL here too
-  ],
+  origin: function (origin, callback) {
+    // 1. Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+
+    // 2. Allow if it's in our explicit list OR if it's a Vercel preview URL
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith(".vercel.app")) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 
