@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { getProjection } from "../api";
 import { C, MetricCard, SectionTitle, Spinner, ErrorBox } from "../shared";
@@ -12,38 +12,45 @@ export default function WealthProjection() {
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState(null);
 
-  const load = async () => {
-    setLoading(true); setError(null);
-    try {
-      const { data: res } = await getProjection({ monthly, rate, years });
-      // Map to recharts format — show every year
-      setData(res.projection.map(p => ({
-        year:     `Y${p.year}`,
-        corpus:   Math.round(p.corpus   / 100000),
-        invested: Math.round(p.invested / 100000),
-      })));
-      setSummary(res.summary);
-    } catch (e) {
-        console.log("FULL ERROR:", e);
-        if (e.response) {
-    // Server responded with error
-        setError(`Error ${e.response.status}: ${e.response.data?.error || "Server error"}`);
-        } else if (e.request) {
-    // Request made but no response
-        setError("No response from server (is backend running?)");
-        } else {
-    // Something else
-        setError(e.message);
-        }
+const load = useCallback(async () => {
+  setLoading(true); 
+  setError(null);
+
+  try {
+    const { data: res } = await getProjection({ monthly, rate, years });
+
+    setData(res.projection.map(p => ({
+      year: `Y${p.year}`,
+      corpus: Math.round(p.corpus / 100000),
+      invested: Math.round(p.invested / 100000),
+    })));
+
+    setSummary(res.summary);
+
+  } catch (e) {
+    console.log("FULL ERROR:", e);
+
+    if (e.response) {
+      setError(`Error ${e.response.status}: ${e.response.data?.error || "Server error"}`);
+    } else if (e.request) {
+      setError("No response from server (is backend running?)");
+    } else {
+      setError(e.message);
     }
-    finally { setLoading(false); }
-  };
+
+  } finally {
+    setLoading(false);
+  }
+}, [monthly, rate, years]); 
 
   // debounce — wait 400ms after slider stops
   useEffect(() => {
-    const t = setTimeout(load, 400);
-    return () => clearTimeout(t);
-  }, [monthly, rate, years]);
+  const t = setTimeout(() => {
+    load();
+  }, 400);
+
+  return () => clearTimeout(t);
+}, [load]);
 
   const sliders = [
     { label: "Monthly SIP",      key: "monthly", val: monthly, set: setMonthly, min: 1000,  max: 100000, step: 1000, disp: v => `₹${(v/1000).toFixed(0)}k` },
