@@ -47,18 +47,48 @@ export function Pill({ children, color = C.gold }) {
 export function MetricCard({ label, value, sub, subColor, icon }) {
   return (
     <div style={{
-      background: C.card, border: `1px solid ${C.border}`,
-      borderRadius: 14, padding: "18px 20px",
-      display: "flex", flexDirection: "column", gap: 6,
-      flex: 1, minWidth: 155,
+      background: C.card,
+      border: `1px solid ${C.border}`,
+      borderRadius: 14,
+      padding: "18px 20px",
+      display: "flex",
+      flexDirection: "column",
+      gap: 6,
+      flex: 1,
+      minWidth: 0,
+      overflow: "hidden",
     }}>
-      <div style={{ fontSize: 12, color: C.muted, display: "flex", alignItems: "center", gap: 6 }}>
-        {icon && <span style={{ fontSize: 14 }}>{icon}</span>} {label}
+      <div style={{
+        fontSize: 12,
+        color: C.muted,
+        display: "flex",
+        alignItems: "center",
+        gap: 6
+      }}>
+        {icon && <span style={{ fontSize: 14 }}>{icon}</span>}
+        {label}
       </div>
-      <div style={{ fontSize: 22, fontWeight: 700, color: C.text, fontFamily: "monospace", letterSpacing: "-0.5px" }}>
+
+      <div style={{
+        fontSize: "clamp(16px, 5vw, 22px)",
+        fontWeight: 700,
+        color: C.text,
+        fontFamily: "monospace",
+        letterSpacing: "-0.5px",
+        overflowWrap: "anywhere",
+        wordBreak: "break-word"
+      }}>
         {value}
       </div>
-      {sub && <div style={{ fontSize: 12, color: subColor || C.muted }}>{sub}</div>}
+
+      {sub && (
+        <div style={{
+          fontSize: 12,
+          color: subColor || C.muted
+        }}>
+          {sub}
+        </div>
+      )}
     </div>
   );
 }
