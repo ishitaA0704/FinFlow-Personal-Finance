@@ -39,9 +39,17 @@ useEffect(() => {
     localStorage.getItem("theme") || "dark"
   );
 
+  const [currency, setCurrency] = useState(
+  localStorage.getItem("currency") || "INR"
+);
+
   useEffect(() => {
   localStorage.setItem("theme", theme);
 }, [theme]);
+
+  useEffect(() => {
+  localStorage.setItem("currency", currency);
+}, [currency]);
 
 const C = {
   ...themes[theme],
@@ -134,6 +142,23 @@ const C = {
             <div style={{ fontSize: 12, color: C.muted }}>{new Date().toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</div>
           </div>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <select
+  value={currency}
+  onChange={(e) => setCurrency(e.target.value)}
+  style={{
+    padding: "8px 12px",
+    borderRadius: 10,
+    border: `1px solid ${C.border}`,
+    background: C.card,
+    color: C.text,
+    cursor: "pointer",
+    fontSize: 13,
+  }}
+>
+  <option value="INR">₹ INR</option>
+  <option value="USD">$ USD</option>
+  <option value="GBP">£ GBP</option>
+</select>
             <button
   onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
   style={{
@@ -154,7 +179,7 @@ const C = {
         </header>
         <main style={{ flex: 1, overflowY: "auto",     padding: isMobile ? "12px" : "24px 28px",
  }}>
-          <PageComponent C={C}/>
+          <PageComponent C={C} currency={currency} />
         </main>
       </div>
     </div>

@@ -35,10 +35,27 @@ export const themes = {
 
 
 // ── Formatters ────────────────────────────────────────────────────────────────
-export const fmt = (n) =>
-  new Intl.NumberFormat("en-IN", {
-    style: "currency", currency: "INR", maximumFractionDigits: 0,
-  }).format(n);
+export const fmt = (n, currency = "INR") => {
+  const rates = {
+    INR: 1,
+    USD: 0.012,
+    GBP: 0.0086,
+  };
+
+  const locales = {
+    INR: "en-IN",
+    USD: "en-US",
+    GBP: "en-GB",
+  };
+
+  const converted = Number(n || 0) * rates[currency];
+
+  return new Intl.NumberFormat(locales[currency], {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  }).format(converted);
+};
 
 export const pct = (v, t) => (t === 0 ? "0.0" : ((v / t) * 100).toFixed(1));
 

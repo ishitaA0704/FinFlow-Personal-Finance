@@ -5,7 +5,7 @@ import { fmt, MetricCard, SectionTitle, Pill, Spinner, ErrorBox, CAT_ICON, CATEG
 
 const EMPTY = { date: "", category: "Food", label: "", amount: "", type: "need", notes: "" };
 
-export default function ExpenseTracker({ C }) {
+export default function ExpenseTracker({ C, currency  }) {
   const [expenses, setExpenses] = useState([]);
   const [form,     setForm]     = useState(EMPTY);
   const [filter,   setFilter]   = useState("all");
@@ -95,8 +95,8 @@ const handleExport = async () => {
 
       {/* Metrics */}
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-        <MetricCard C={C} icon="✅" label="Total Needs"   value={fmt(needSpend)}  subColor={C.green} sub="Essential expenses" />
-        <MetricCard C={C} icon="🎯" label="Total Wants"   value={fmt(wantSpend)}  subColor={C.gold}  sub="Lifestyle expenses" />
+        <MetricCard C={C} icon="✅" label="Total Needs"   value={fmt(needSpend, currency)}  subColor={C.green} sub="Essential expenses" />
+        <MetricCard C={C} icon="🎯" label="Total Wants"   value={fmt(wantSpend, currency)}  subColor={C.gold}  sub="Lifestyle expenses" />
         <MetricCard C={C} icon="📋" label="Total Entries" value={expenses.length}
           sub={`${expenses.filter(e => e.type === "need").length} needs · ${expenses.filter(e => e.type === "want").length} wants`} />
       </div>
@@ -158,8 +158,8 @@ const handleExport = async () => {
               <CartesianGrid strokeDasharray="3 3" stroke={C.border} />
               <XAxis dataKey="name" tick={{ fill: C.muted, fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: C.muted, fontSize: 11 }} axisLine={false} tickLine={false}
-                tickFormatter={v => `₹${(v / 1000).toFixed(0)}k`} />
-              <Tooltip formatter={(value) => fmt(value)}
+                tickFormatter={v => fmt(v, currency)} />
+              <Tooltip formatter={(value) => fmt(value, currency)}
                 contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, color: C.text }} />
               <Bar dataKey="need" fill={C.green} radius={[4, 4, 0, 0]} name="Need" />
               <Bar dataKey="want" fill={C.gold}  radius={[4, 4, 0, 0]} name="Want" />
@@ -223,7 +223,7 @@ const handleExport = async () => {
                   </div>
                   <Pill color={e.type === "need" ? C.green : C.gold}>{e.type}</Pill>
                   <div style={{ fontSize: 14, fontWeight: 700, color: C.text, fontFamily: "monospace", minWidth: 80, textAlign: "right" }}>
-                    {fmt(e.amount)}
+                    {fmt(e.amount, currency)}
                   </div>
                   <button onClick={() => del(e._id)}
                     style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14, padding: "0 4px" }}>
