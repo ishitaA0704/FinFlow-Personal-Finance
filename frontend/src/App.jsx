@@ -19,19 +19,6 @@ const TITLES = {
   projection: "Wealth Projections",
 };
 
-// Breakpoint for mobile
-const MOBILE_BP = 640;
-
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth < MOBILE_BP);
-  useEffect(() => {
-    const handler = () => setIsMobile(window.innerWidth < MOBILE_BP);
-    window.addEventListener("resize", handler);
-    return () => window.removeEventListener("resize", handler);
-  }, []);
-  return isMobile;
-}
-
 export default function App() {
   const [page, setPage] = useState("dashboard");
   const [collapsed, setCollapsed] = useState(false);
@@ -170,39 +157,6 @@ const C = {
           <PageComponent C={C}/>
         </main>
       </div>
-
-      {/* ── Mobile Bottom Tab Bar ── */}
-      {isMobile && (
-        <nav style={{
-          position: "fixed", bottom: 0, left: 0, right: 0,
-          height: 60, zIndex: 30,
-          background: C.surface,
-          borderTop: `1px solid ${C.border}`,
-          display: "flex", alignItems: "stretch",
-        }}>
-          {NAV.map(n => (
-            <button
-              key={n.id}
-              onClick={() => navigateTo(n.id)}
-              style={{
-                flex: 1, display: "flex", flexDirection: "column",
-                alignItems: "center", justifyContent: "center", gap: 3,
-                border: "none", background: "transparent",
-                cursor: "pointer",
-                color: page === n.id ? C.gold : C.muted,
-                borderTop: page === n.id ? `2px solid ${C.gold}` : "2px solid transparent",
-                transition: "all 0.15s",
-              }}
-            >
-              <span style={{ fontSize: 20, lineHeight: 1 }}>{n.icon}</span>
-              <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.03em" }}>
-                {n.label.split(" ")[0]}
-              </span>
-            </button>
-          ))}
-        </nav>
-      )}
     </div>
   );
 }
-
