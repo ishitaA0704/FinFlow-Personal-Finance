@@ -6,8 +6,7 @@ import {
 import { getSummary, getExpenseAnalytics } from "../api";
 import { fmt, pct, MetricCard, SectionTitle, Spinner, ErrorBox } from "../shared";
 
-export default function Dashboard({ C }) {
-  const [summary,   setSummary]   = useState(null);
+export default function Dashboard({ C, currency }) {  const [summary,   setSummary]   = useState(null);
   const [analytics, setAnalytics] = useState([]);
   const [loading,   setLoading]   = useState(true);
   const [error,     setError]     = useState(null);
@@ -68,14 +67,15 @@ console.log("Want:", expenses.wantSpend);
     gap: 12, width: "100%",
   }}
 >
-        <MetricCard C={C} icon="💰" label="Total Wealth"   value={fmt(s.totalWealth)}
-          sub={`P&L ${s.totalPL >= 0 ? "+" : ""}${fmt(s.totalPL)}`}
+        <MetricCard C={C} icon="💰" label="Total Wealth"   value={fmt(s.totalWealth, currency)}
+          sub={`P&L ${s.totalPL >= 0 ? "+" : ""}${fmt(s.totalPL, currency)}`}
           subColor={s.totalPL >= 0 ? C.green : C.red} />
-        <MetricCard C={C} icon="📊" label="Total Invested" value={fmt(s.totalInvested)} sub="Across all assets" />
+        <MetricCard C={C} icon="📊" label="Total Invested" value={fmt(s.totalInvested, currency)} sub="Across all assets" />
         <MetricCard C={C} icon="💸" label="Month Spend"
-          value={fmt((expenses.needSpend || 0) + (expenses.wantSpend || 0))}
-          sub={`Needs ₹${Math.round((expenses.needSpend||0)/1000)}k · Wants ₹${Math.round((expenses.wantSpend||0)/1000)}k`} />
-        <MetricCard C={C} icon="🏦" label="Liquid Cash"    value={fmt(allocation.liquid.value)} sub="Available" />
+          value={fmt((expenses.needSpend || 0) + (expenses.wantSpend || 0), currency)}
+sub={`Needs ${fmt(expenses.needSpend || 0, currency)} · Wants ${fmt(expenses.wantSpend || 0, currency)}`}
+ />
+        <MetricCard C={C} icon="🏦" label="Liquid Cash"    value={fmt(allocation.liquid.value, currency)} sub="Available" />
       </div>
 
       {/* Flow Chart */}
@@ -100,9 +100,8 @@ console.log("Want:", expenses.wantSpend);
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={C.border} />
               <XAxis dataKey="month" tick={{ fill: C.muted, fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: C.muted, fontSize: 11 }} axisLine={false} tickLine={false}
-                tickFormatter={v => `₹${(v / 1000).toFixed(0)}k`} />
-              <Tooltip formatter={(v) => fmt(v)}
+              <YAxis tickFormatter={v => fmt(v, currency)} />
+              <Tooltip formatter={(v) => fmt(v, currency)}
                 contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, color: C.text }} />
               <Area type="monotone" dataKey="need"  stroke={C.green} fill="url(#gNeed)" strokeWidth={2} name="Needs" />
               <Area type="monotone" dataKey="want"  stroke={C.gold}  fill="url(#gWant)" strokeWidth={2} name="Wants" />
@@ -150,7 +149,7 @@ console.log("Want:", expenses.wantSpend);
                 <div key={r.label}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
                     <span style={{ fontSize: 12, color: C.muted }}>{r.label}</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: C.text }}>{fmt(r.val)}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: C.text }}>{fmt(r.val, currency)}</span>
                   </div>
                   <div style={{ height: 8, background: C.border, borderRadius: 4, overflow: "hidden" }}>
                     <div style={{ height: "100%", width: `${pct(r.val, total)}%`, background: r.color, borderRadius: 4 }} />
